@@ -18,7 +18,11 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Query, Request, Security, UploadFile, status
+<<<<<<< HEAD
 from fastapi.responses import FileResponse, StreamingResponse
+=======
+from fastapi.responses import RedirectResponse, StreamingResponse
+>>>>>>> e8aded8 (feat: implement glassmorphism design system and updated UI branding components)
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
@@ -36,6 +40,21 @@ for _s in ("stdout", "stderr"):
 RUNS_DIR = Path(__file__).resolve().parent / "runs"
 SESSIONS_DIR = Path(__file__).resolve().parent / "sessions"
 UPLOADS_DIR = Path(__file__).resolve().parent / "uploads"
+
+# Robust path resolution for cases where the package is installed in site-packages
+# but the user is running from the repository root
+if not RUNS_DIR.exists():
+    local_runs = Path.cwd() / "agent" / "runs"
+    if local_runs.exists():
+        RUNS_DIR = local_runs
+        SESSIONS_DIR = Path.cwd() / "agent" / "sessions"
+        UPLOADS_DIR = Path.cwd() / "agent" / "uploads"
+elif not RUNS_DIR.is_dir():
+    # If it's a file or doesn't exist yet, we prefer CWD if it looks like the project root
+    if (Path.cwd() / "agent").is_dir():
+        RUNS_DIR = Path.cwd() / "agent" / "runs"
+        SESSIONS_DIR = Path.cwd() / "agent" / "sessions"
+        UPLOADS_DIR = Path.cwd() / "agent" / "uploads"
 
 MAX_UPLOAD_SIZE = 50 * 1024 * 1024  # 50 MB
 
@@ -545,6 +564,12 @@ async def list_runs(limit: int = 20):
     return results
 
 
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    """Redirect favicon.ico to favicon.svg."""
+    return RedirectResponse(url="/favicon.svg")
+
+
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
     """Liveness probe."""
@@ -1036,6 +1061,15 @@ def serve_main(argv: list[str] | None = None) -> int:
 
     frontend_dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"
     frontend_root = Path(__file__).resolve().parent.parent / "frontend"
+
+    # Robust path resolution for cases where the package is installed in site-packages
+    # but the user is running from the repository root
+    if not frontend_dist.exists():
+        local_dist = Path.cwd() / "frontend" / "dist"
+        if local_dist.exists():
+            frontend_dist = local_dist
+            frontend_root = Path.cwd() / "frontend"
+            print(f"[info] Using local frontend from {frontend_dist}")
 
     vite_proc = None
     if args.dev and frontend_root.exists():

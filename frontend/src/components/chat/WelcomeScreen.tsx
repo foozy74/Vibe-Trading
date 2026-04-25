@@ -1,5 +1,6 @@
-﻿import { Bot, TrendingUp, Bitcoin, Globe, Sparkles, Users, UserCircle2, NotebookPen } from "lucide-react";
+import { Bot, TrendingUp, Bitcoin, Globe, Sparkles, Users, Zap, UserCircle2, NotebookPen } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 
 interface Example {
   title: string;
@@ -10,15 +11,17 @@ interface Example {
 interface Category {
   label: string;
   icon: React.ReactNode;
-  color: string;
+  colorClass: string;
+  glowClass: string;
   examples: Example[];
 }
 
 const CATEGORIES: Category[] = [
   {
-    label: "Multi-Market Backtest",
+    label: "Advanced Backtesting",
     icon: <TrendingUp className="h-4 w-4" />,
-    color: "text-red-400 border-red-500/30 hover:border-red-500/60 hover:bg-red-500/5",
+    colorClass: "text-teal",
+    glowClass: "hover:border-teal/50 hover:bg-teal/5 shadow-teal/10",
     examples: [
       {
         title: "Cross-Market Portfolio",
@@ -27,20 +30,16 @@ const CATEGORIES: Category[] = [
       },
       {
         title: "BTC 5-Min MACD Strategy",
-        desc: "Minute-level crypto backtest with real-time OKX data",
+        desc: "Minute-level crypto backtest with real-time data",
         prompt: "Backtest BTC-USDT 5-minute MACD strategy, fast=12 slow=26 signal=9, last 30 days",
-      },
-      {
-        title: "US Tech Max Diversification",
-        desc: "Portfolio optimizer across FAANG+ via yfinance",
-        prompt: "Backtest AAPL, MSFT, GOOGL, AMZN, NVDA with max_diversification portfolio optimizer, full-year 2024",
       },
     ],
   },
   {
-    label: "Research & Analysis",
-    icon: <Sparkles className="h-4 w-4" />,
-    color: "text-amber-400 border-amber-500/30 hover:border-amber-500/60 hover:bg-amber-500/5",
+    label: "Neural Research",
+    icon: <Zap className="h-4 w-4" />,
+    colorClass: "text-blue",
+    glowClass: "hover:border-blue/50 hover:bg-blue/5 shadow-blue/10",
     examples: [
       {
         title: "Multi-Factor Alpha Model",
@@ -55,9 +54,10 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    label: "Swarm Teams",
+    label: "Swarm Intelligence",
     icon: <Users className="h-4 w-4" />,
-    color: "text-violet-400 border-violet-500/30 hover:border-violet-500/60 hover:bg-violet-500/5",
+    colorClass: "text-purple",
+    glowClass: "hover:border-purple/50 hover:bg-purple/5 shadow-purple/10",
     examples: [
       {
         title: "Investment Committee Review",
@@ -66,23 +66,24 @@ const CATEGORIES: Category[] = [
       },
       {
         title: "Quant Strategy Desk",
-        desc: "Screening → factor research → backtest → risk audit pipeline",
+        desc: "Screening → research → backtest → risk audit pipeline",
         prompt: "[Swarm Team Mode] Use the quant_strategy_desk preset to find and backtest the best momentum strategy on CSI 300 constituents",
       },
     ],
   },
   {
-    label: "Document & Web Research",
+    label: "Market Analysis",
     icon: <Globe className="h-4 w-4" />,
-    color: "text-blue-400 border-blue-500/30 hover:border-blue-500/60 hover:bg-blue-500/5",
+    colorClass: "text-teal",
+    glowClass: "hover:border-teal/50 hover:bg-teal/5 shadow-teal/10",
     examples: [
       {
-        title: "Analyze an Earnings Report PDF",
-        desc: "Upload a PDF and ask questions about the financials",
+        title: "Analyze Earnings Report",
+        desc: "Summarize metrics, risks, and outlook from PDF",
         prompt: "Summarize the key financial metrics, risks, and outlook from the uploaded earnings report",
       },
       {
-        title: "Web Research: Macro Outlook",
+        title: "Macro Sentiment Audit",
         desc: "Read live web sources for macro analysis",
         prompt: "Read the latest Fed meeting minutes and summarize the key takeaways for equity and crypto markets",
       },
@@ -154,29 +155,36 @@ export function WelcomeScreen({ onExample }: Props) {
   const { t } = useI18n();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-8 text-center">
+    <div className="flex flex-col items-center justify-center min-h-[70vh] space-y-12 py-12">
       {/* Header */}
-      <div className="space-y-3">
-        <div className="h-16 w-16 mx-auto rounded-2xl bg-gradient-to-br from-primary/80 to-info/80 flex items-center justify-center shadow-lg">
-          <Bot className="h-8 w-8 text-white" />
+      <div className="space-y-6 max-w-2xl">
+        <div className="relative mx-auto w-20 h-20 group">
+          <div className="absolute -inset-4 bg-teal/20 rounded-full blur-2xl opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
+          <div className="relative h-20 w-20 rounded-2xl bg-gradient-to-br from-teal/20 to-blue/20 border border-teal/30 flex items-center justify-center shadow-2xl backdrop-blur-xl">
+            <Bot className="h-10 w-10 text-teal" />
+          </div>
         </div>
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Vibe-Trading</h2>
-          <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto leading-relaxed">
-            vibe trading with your professional financial agent team
-          </p>
-          <p className="text-sm text-muted-foreground mt-2 max-w-md leading-relaxed mx-auto">
-            {t.describeStrategy}
+        
+        <div className="space-y-2">
+          <h1 className="text-4xl font-black tracking-tighter text-white">
+            Vibe<span className="text-teal">Trading</span>
+          </h1>
+          <p className="text-[10px] font-mono text-blue uppercase tracking-[0.4em] font-bold">
+            Powered by thesolution.at
           </p>
         </div>
+
+        <p className="text-sm text-text-muted leading-relaxed max-w-lg mx-auto">
+          Deploy specialized neural agent swarms to analyze markets, backtest strategies, and optimize your portfolio in real-time.
+        </p>
       </div>
 
       {/* Capability chips */}
-      <div className="flex flex-wrap justify-center gap-2 max-w-lg">
+      <div className="flex flex-wrap justify-center gap-3 max-w-2xl">
         {CAPABILITY_CHIPS.map((chip) => (
           <span
             key={chip}
-            className="px-2.5 py-1 text-xs rounded-full border border-border/60 text-muted-foreground bg-muted/30"
+            className="px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full border border-white/5 text-text-muted bg-white/[0.02] backdrop-blur-md"
           >
             {chip}
           </span>
@@ -184,26 +192,34 @@ export function WelcomeScreen({ onExample }: Props) {
       </div>
 
       {/* Example categories grid */}
-      <div className="w-full max-w-2xl text-left space-y-4">
-        <p className="text-xs text-muted-foreground px-1">{t.examples}</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="w-full max-w-3xl text-left space-y-6">
+        <div className="flex items-center gap-3 px-1">
+          <div className="h-px flex-1 bg-white/5" />
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-faint">{t.examples}</span>
+          <div className="h-px flex-1 bg-white/5" />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {CATEGORIES.map((cat) => (
-            <div key={cat.label} className="space-y-2">
-              <div className={`flex items-center gap-1.5 text-xs font-medium px-1 ${cat.color.split(" ").filter(c => c.startsWith("text-")).join(" ")}`}>
+            <div key={cat.label} className="space-y-4">
+              <div className={cn("flex items-center gap-2.5 text-[10px] font-black uppercase tracking-widest px-1", cat.colorClass)}>
                 {cat.icon}
                 <span>{cat.label}</span>
               </div>
-              <div className="space-y-1.5">
+              <div className="grid gap-3">
                 {cat.examples.map((ex) => (
                   <button
                     key={ex.title}
                     onClick={() => onExample(ex.prompt)}
-                    className={`block w-full text-left px-3 py-2.5 rounded-xl border transition-colors ${cat.color}`}
+                    className={cn(
+                      "group block w-full text-left p-4 rounded-2xl border border-white/5 bg-white/[0.01] transition-all duration-500",
+                      cat.glowClass
+                    )}
                   >
-                    <span className="text-sm font-medium text-foreground leading-snug">
+                    <span className="block text-sm font-bold text-white group-hover:text-teal transition-colors">
                       {ex.title}
                     </span>
-                    <span className="block text-xs text-muted-foreground mt-0.5 leading-snug">
+                    <span className="block text-[11px] text-text-muted mt-1 leading-relaxed opacity-70 group-hover:opacity-100 transition-opacity">
                       {ex.desc}
                     </span>
                   </button>
@@ -216,5 +232,3 @@ export function WelcomeScreen({ onExample }: Props) {
     </div>
   );
 }
-
-

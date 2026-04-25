@@ -639,17 +639,17 @@ export function Agent() {
   const groups = useMemo(() => groupMessages(messages), [messages]);
 
   return (
-    <div className="flex flex-col flex-1 min-w-0 overflow-hidden h-full">
-      <div ref={listRef} className="flex-1 overflow-auto p-6 scroll-smooth relative">
-        <div className="max-w-3xl mx-auto space-y-4">
+    <div className="flex flex-col flex-1 min-w-0 overflow-hidden h-full relative">
+      <div ref={listRef} className="flex-1 overflow-auto p-8 scroll-smooth relative z-0 custom-scrollbar">
+        <div className="max-w-4xl mx-auto space-y-8">
           {sessionLoading && (
-            <div className="space-y-4 py-4">
+            <div className="space-y-6 py-4">
               {[1, 2, 3].map(i => (
-                <div key={i} className="flex gap-3 animate-pulse">
-                  <div className="h-8 w-8 rounded-full bg-muted shrink-0" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-muted rounded w-3/4" />
-                    <div className="h-3 bg-muted/60 rounded w-1/2" />
+                <div key={i} className="flex gap-4 animate-pulse">
+                  <div className="h-10 w-10 rounded-lg bg-white/5 shrink-0" />
+                  <div className="flex-1 space-y-3">
+                    <div className="h-4 bg-white/10 rounded w-3/4" />
+                    <div className="h-3 bg-white/5 rounded w-1/2" />
                   </div>
                 </div>
               ))}
@@ -671,10 +671,12 @@ export function Agent() {
             // Render swarm-progress as SwarmDashboard
             if (g.msg.id === "swarm-progress" && swarmDash) {
               return (
-                <div key="swarm-dash" className="flex gap-3">
+                <div key="swarm-dash" className="flex gap-4">
                   <AgentAvatar />
                   <div className="flex-1 min-w-0">
-                    <SwarmDashboard {...swarmDash} />
+                    <div className="terminal-box" data-title="SWARM INTELLIGENCE MONITOR">
+                      <SwarmDashboard {...swarmDash} />
+                    </div>
                   </div>
                 </div>
               );
@@ -688,27 +690,31 @@ export function Agent() {
 
           {/* Live streaming area: text + tool status */}
           {(streamingText || (status === "streaming" && toolCalls.length > 0)) && (
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               <AgentAvatar />
-              <div className="flex-1 min-w-0 space-y-1.5">
-                {streamingText && (
-                  <div className="prose prose-sm dark:prose-invert max-w-none leading-relaxed">
-                    {streamingText}
-                    <span className="inline-block w-0.5 h-4 bg-primary ml-0.5 animate-pulse align-middle" />
-                  </div>
-                )}
-                {status === "streaming" && toolCalls.length > 0 && (() => {
-                  const latest = toolCalls[toolCalls.length - 1];
-                  const running = latest.status === "running";
-                  return (
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      {running
-                        ? <Loader2 className="h-3 w-3 animate-spin text-primary shrink-0" />
-                        : <CheckCircle2 className="h-3 w-3 text-success/60 shrink-0" />}
-                      <span>Step {toolCalls.length} · {latest.tool}</span>
+              <div className="flex-1 min-w-0 space-y-3">
+                <div className="terminal-box" data-title="REAL-TIME STREAM">
+                  {streamingText && (
+                    <div className="prose prose-sm prose-invert max-w-none leading-relaxed font-sans text-white/90">
+                      {streamingText}
+                      <span className="inline-block w-1.5 h-4 bg-accent-teal ml-1.5 animate-pulse align-middle shadow-[0_0_8px_rgba(125,211,192,0.8)]" />
                     </div>
-                  );
-                })()}
+                  )}
+                  {status === "streaming" && toolCalls.length > 0 && (() => {
+                    const latest = toolCalls[toolCalls.length - 1];
+                    const running = latest.status === "running";
+                    return (
+                      <div className="flex items-center gap-3 mt-4 pt-4 border-t border-white/5 text-[10px] font-mono tracking-widest uppercase">
+                        {running
+                          ? <Loader2 className="h-3.5 w-3.5 animate-spin text-accent-blue shrink-0" />
+                          : <CheckCircle2 className="h-3.5 w-3.5 text-accent-teal shrink-0" />}
+                        <span className={running ? "text-accent-blue animate-pulse" : "text-accent-teal"}>
+                          STEP {toolCalls.length} // {latest.tool}
+                        </span>
+                      </div>
+                    );
+                  })()}
+                </div>
               </div>
             </div>
           )}
@@ -719,70 +725,61 @@ export function Agent() {
         {showScrollBtn && (
           <button
             onClick={forceScrollToBottom}
-            className="sticky bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-medium shadow-lg hover:opacity-90 transition-opacity z-10"
+            className="sticky bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full bg-accent-blue text-bg-dark text-[10px] font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(91,155,213,0.4)] hover:scale-105 transition-all z-10"
           >
-            <ArrowDown className="h-3 w-3" /> New messages
+            <ArrowDown className="h-3.5 w-3.5" /> Synchronize Stream
           </button>
         )}
         <ConversationTimeline messages={messages} containerRef={listRef} />
       </div>
 
-      <form onSubmit={handleSubmit} className="border-t p-4 bg-background/80 backdrop-blur-sm">
-        <div className="max-w-3xl mx-auto space-y-2">
-          {/* Swarm preset badge */}
-          {swarmPreset && (
-            <div className="flex items-center gap-1">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400 text-xs font-medium">
+      <form onSubmit={handleSubmit} className="p-6 bg-black/20 backdrop-blur-xl border-t border-glass-border">
+        <div className="max-w-4xl mx-auto space-y-4">
+          <div className="flex gap-3 flex-wrap">
+            {/* Swarm preset badge */}
+            {swarmPreset && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-purple/10 border border-accent-purple/20 text-accent-purple text-[10px] font-bold uppercase tracking-wider">
                 <Users className="h-3 w-3" />
                 {swarmPreset.title}
-                <button type="button" onClick={() => setSwarmPreset(null)} className="hover:text-destructive transition-colors">
+                <button type="button" onClick={() => setSwarmPreset(null)} className="hover:text-white transition-colors ml-1">
                   <X className="h-3 w-3" />
                 </button>
-              </span>
-            </div>
-          )}
-          {/* Attachment badge */}
-          {attachment && (
-            <div className="flex items-center gap-1">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/10 text-primary text-xs font-medium">
+              </div>
+            )}
+            {/* Attachment badge */}
+            {attachment && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-teal/10 border border-accent-teal/20 text-accent-teal text-[10px] font-bold uppercase tracking-wider">
                 <Paperclip className="h-3 w-3" />
                 {attachment.filename}
-                <button type="button" onClick={() => setAttachment(null)} className="hover:text-destructive transition-colors">
+                <button type="button" onClick={() => setAttachment(null)} className="hover:text-white transition-colors ml-1">
                   <X className="h-3 w-3" />
                 </button>
-              </span>
-            </div>
-          )}
-          {/* Uploading indicator */}
-          {uploading && (
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Loader2 className="h-3 w-3 animate-spin" />
-              Uploading...
-            </div>
-          )}
-          <div className="flex gap-2 items-end">
-            {/* "+" menu: PDF upload + Swarm presets */}
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-3 items-end">
             <div className="relative" ref={uploadMenuRef}>
               <button
                 type="button"
                 onClick={() => setShowUploadMenu(prev => !prev)}
                 disabled={status === "streaming" || uploading}
-                className="w-9 h-9 rounded-full border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-40 shrink-0"
-                title="More options"
+                className="w-11 h-11 rounded-xl glass flex items-center justify-center text-text-dim hover:text-accent-teal hover:border-accent-teal/50 transition-all disabled:opacity-40 shrink-0"
+                title="System Functions"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-5 w-5" />
               </button>
               {showUploadMenu && (
-                <div className="absolute bottom-full left-0 mb-2 w-52 rounded-xl border bg-background/95 backdrop-blur-sm shadow-lg py-1 z-50">
+                <div className="absolute bottom-full left-0 mb-3 w-64 rounded-xl glass border-glass-border bg-bg-dark/95 shadow-2xl py-2 z-50 p-1">
                   <button
                     type="button"
                     onClick={() => { fileInputRef.current?.click(); setShowUploadMenu(false); }}
-                    className="w-full px-3 py-2 text-left text-sm hover:bg-muted transition-colors flex items-center gap-2"
+                    className="w-full px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 text-text-dim hover:text-white transition-all flex items-center gap-3 rounded-lg"
                   >
-                    <Paperclip className="h-4 w-4" />
-                    Upload PDF document
+                    <Paperclip className="h-4 w-4 text-accent-blue" />
+                    Upload Dataset (PDF)
                   </button>
-                  <div className="border-t my-1" />
+                  <div className="h-px bg-white/5 my-1 mx-2" />
                   <button
                     type="button"
                     onClick={() => {
@@ -790,14 +787,15 @@ export function Agent() {
                       setSwarmPreset({ name: "auto", title: "Agent Swarm" });
                       inputRef.current?.focus();
                     }}
-                    className="w-full px-3 py-2 text-left text-sm hover:bg-muted transition-colors flex items-center gap-2"
+                    className="w-full px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 text-text-dim hover:text-white transition-all flex items-center gap-3 rounded-lg"
                   >
-                    <Users className="h-4 w-4" />
-                    Agent Swarm
+                    <Users className="h-4 w-4 text-accent-purple" />
+                    Initialize Swarm Team
                   </button>
                 </div>
               )}
             </div>
+            
             <input
               ref={fileInputRef}
               type="file"
@@ -805,52 +803,60 @@ export function Agent() {
               onChange={handleFileSelect}
               className="hidden"
             />
-            <textarea
-              ref={inputRef}
-              value={input}
-              rows={1}
-              onChange={(e) => setInput(e.target.value)}
-              onInput={(e) => {
-                const el = e.target as HTMLTextAreaElement;
-                el.style.height = "auto";
-                el.style.height = el.scrollHeight + "px";
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  runPrompt(input.trim());
-                }
-              }}
-              placeholder={t.prompt}
-              className="flex-1 px-4 py-2.5 rounded-xl border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 transition-shadow resize-none max-h-32 overflow-y-auto"
-              disabled={status === "streaming"}
-            />
-            {messages.length > 0 && (
-              <button
-                type="button"
-                onClick={handleExport}
-                className="px-3 py-2.5 rounded-xl border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                title="Export chat"
-              >
-                <Download className="h-4 w-4" />
-              </button>
-            )}
+
+            <div className="flex-1 relative group">
+              <textarea
+                ref={inputRef}
+                value={input}
+                rows={1}
+                onChange={(e) => setInput(e.target.value)}
+                onInput={(e) => {
+                  const el = e.target as HTMLTextAreaElement;
+                  el.style.height = "auto";
+                  el.style.height = el.scrollHeight + "px";
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    runPrompt(input.trim());
+                  }
+                }}
+                placeholder="EXECUTE COMMAND..."
+                className="w-full px-5 py-3.5 rounded-xl border border-glass-border bg-black/40 text-sm font-mono text-white focus:outline-none focus:border-accent-blue/50 focus:ring-1 focus:ring-accent-blue/20 transition-all resize-none max-h-48 overflow-y-auto placeholder:text-white/20"
+                disabled={status === "streaming"}
+              />
+              <div className="absolute right-3 bottom-3 flex items-center gap-2">
+                {uploading && <Loader2 className="h-4 w-4 animate-spin text-accent-teal" />}
+                {messages.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleExport}
+                    className="p-1.5 text-text-dim hover:text-white transition-colors"
+                    title="Export Logs"
+                  >
+                    <Download className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+
             {status === "streaming" ? (
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-4 py-2.5 rounded-xl bg-destructive text-destructive-foreground text-sm font-medium hover:opacity-90 transition-opacity"
-                title="Stop generation"
+                className="w-11 h-11 rounded-xl bg-danger/20 border border-danger/30 text-danger flex items-center justify-center hover:bg-danger/30 transition-all shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+                title="TERMINATE EXECUTION"
               >
-                <Square className="h-4 w-4" />
+                <Square className="h-5 w-5 fill-current" />
               </button>
             ) : (
               <button
                 type="submit"
                 disabled={!input.trim() && !attachment}
-                className="px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium disabled:opacity-40 hover:opacity-90 transition-opacity"
+                className="glow-button h-11 !w-28 text-[11px] font-black tracking-widest disabled:opacity-30 disabled:grayscale"
               >
                 <Send className="h-4 w-4" />
+                EXEC
               </button>
             )}
           </div>

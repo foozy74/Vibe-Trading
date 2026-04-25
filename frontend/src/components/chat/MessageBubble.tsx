@@ -7,6 +7,7 @@ import { formatTimestamp } from "@/lib/formatters";
 import type { AgentMessage } from "@/types/agent";
 import { AgentAvatar } from "./AgentAvatar";
 import { RunCompleteCard } from "./RunCompleteCard";
+import { cn } from "@/lib/utils";
 
 const remarkPlugins = [remarkGfm];
 const rehypePlugins = [rehypeHighlight];
@@ -22,10 +23,10 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="absolute top-2 right-2 p-1.5 rounded-md bg-muted/80 hover:bg-muted text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+      className="absolute top-4 right-4 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-text-muted hover:text-white opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-md border border-white/5"
       title={copied ? "Copied" : "Copy"}
     >
-      {copied ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
+      {copied ? <Check className="h-4 w-4 text-teal" /> : <Copy className="h-4 w-4" />}
     </button>
   );
 }
@@ -33,12 +34,9 @@ function CopyButton({ text }: { text: string }) {
 function getRetryHint(content: string): string {
   const lower = content.toLowerCase();
   if (lower.includes("timeout") || lower.includes("timed out")) {
-    return "Execution timed out. Try simplifying the strategy or reducing the number of assets.";
+    return "Execution timed out. Try simplifying the strategy.";
   }
-  if (lower.includes("api") || lower.includes("rate limit") || lower.includes("429") || lower.includes("500") || lower.includes("502") || lower.includes("503")) {
-    return "API call failed. Please retry later.";
-  }
-  return "Execution failed. Click to retry.";
+  return "Execution failed. Click to re-initialize.";
 }
 
 interface Props {
@@ -51,13 +49,18 @@ export const MessageBubble = memo(function MessageBubble({ msg, onRetry }: Props
 
   if (msg.type === "user") {
     return (
-      <div className="flex justify-end gap-3 group">
-        <div className="max-w-[72%] rounded-2xl rounded-tr-sm bg-primary text-primary-foreground px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap">
+      <div className="flex justify-end gap-5 group">
+        <div className="max-w-[85%] glass px-6 py-4 text-[13px] leading-relaxed whitespace-pre-wrap text-white/90 border-blue/20 bg-blue/5 shadow-2xl">
           {msg.content}
-          {ts && <span className="block text-[9px] opacity-50 text-right mt-1">{ts}</span>}
+          {ts && (
+            <div className="flex items-center justify-end gap-2 mt-3 opacity-30 group-hover:opacity-100 transition-opacity">
+               <span className="h-px w-8 bg-blue/30" />
+               <span className="text-[9px] font-mono text-blue uppercase tracking-widest font-bold">{ts} // USER_SIG</span>
+            </div>
+          )}
         </div>
-        <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
-          <User className="h-4 w-4 text-muted-foreground" />
+        <div className="h-10 w-10 rounded-xl glass border-blue/30 flex items-center justify-center shrink-0 mt-0.5 bg-blue/10 shadow-lg">
+          <User className="h-5 w-5 text-blue" />
         </div>
       </div>
     );
@@ -65,54 +68,62 @@ export const MessageBubble = memo(function MessageBubble({ msg, onRetry }: Props
 
   if (msg.type === "answer") {
     return (
-      <div className="flex gap-3 group">
+      <div className="flex gap-5 group">
         <AgentAvatar />
         <div className="flex-1 min-w-0 relative">
-          <CopyButton text={msg.content} />
-          <div className="prose prose-sm dark:prose-invert max-w-none leading-relaxed prose-table:border prose-table:border-border/50 prose-th:bg-muted/30 prose-th:px-3 prose-th:py-1.5 prose-td:px-3 prose-td:py-1.5 prose-th:text-left prose-th:text-xs prose-th:font-medium prose-td:text-xs">
-            <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>{msg.content}</ReactMarkdown>
+          <div className="terminal-box !p-8" data-title="NEURAL RESPONSE">
+            <CopyButton text={msg.content} />
+            <div className="prose prose-sm prose-invert max-w-none leading-relaxed prose-table:border prose-table:border-white/5 prose-th:bg-white/5 prose-th:px-4 prose-th:py-3 prose-td:px-4 prose-td:py-3 prose-th:text-left prose-th:text-[10px] prose-th:font-black prose-th:uppercase prose-th:tracking-widest prose-th:text-purple prose-td:text-[11px] prose-td:font-mono prose-td:text-white/80 font-sans">
+              <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>{msg.content}</ReactMarkdown>
+            </div>
+            {ts && (
+              <div className="flex items-center gap-3 mt-6 pt-4 border-t border-white/5 opacity-0 group-hover:opacity-30 transition-opacity">
+                <span className="text-[9px] font-mono text-text-muted uppercase tracking-tighter font-bold">
+                  {ts} // TRACE_ID: {msg.id.slice(0, 8)}
+                </span>
+                <div className="h-1.5 w-1.5 rounded-full bg-teal animate-pulse" />
+              </div>
+            )}
           </div>
-          {ts && <span className="text-[9px] text-muted-foreground/30 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">{ts}</span>}
         </div>
       </div>
     );
   }
 
   if (msg.type === "run_complete" && msg.runId) {
-    return <RunCompleteCard msg={msg} />;
-  }
-
-  if (msg.type === "error") {
-    const hint = getRetryHint(msg.content);
     return (
-      <div className="flex gap-3">
+      <div className="flex gap-5 group">
         <AgentAvatar />
-        <div className="space-y-2">
-          <div className="flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/5 px-4 py-3">
-            <XCircle className="h-4 w-4 text-danger shrink-0 mt-0.5" />
-            <p className="text-sm text-danger leading-relaxed">{msg.content}</p>
-          </div>
-          {onRetry && (
-            <button
-              onClick={() => onRetry(msg)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted/80 border border-transparent hover:border-border transition-all"
-              title={hint}
-            >
-              <RefreshCw className="h-3 w-3" />
-              <span>{hint}</span>
-            </button>
-          )}
+        <div className="flex-1 min-w-0">
+          <RunCompleteCard msg={msg} />
         </div>
       </div>
     );
   }
 
-  // Fallback: show content for any unhandled message type
-  if (msg.content) {
+  if (msg.type === "error") {
+    const hint = getRetryHint(msg.content);
     return (
-      <div className="flex gap-3">
+      <div className="flex gap-5">
         <AgentAvatar />
-        <p className="text-sm text-muted-foreground leading-relaxed">{msg.content}</p>
+        <div className="space-y-4 flex-1">
+          <div className="terminal-box border-red-500/30 bg-red-500/5 !p-6" data-title="CRITICAL FAULT">
+            <div className="flex items-start gap-4">
+              <XCircle className="h-6 w-6 text-red-500 shrink-0 mt-0.5" />
+              <p className="text-[13px] font-mono text-red-400/90 leading-relaxed uppercase tracking-tight font-bold">{msg.content}</p>
+            </div>
+          </div>
+          {onRetry && (
+            <button
+              onClick={() => onRetry(msg)}
+              className="flex items-center gap-3 px-6 py-3 rounded-xl bg-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted hover:text-white hover:bg-white/10 border border-white/5 transition-all shadow-lg"
+              title={hint}
+            >
+              <RefreshCw className="h-4 w-4 text-blue" />
+              <span>RE-INITIALIZE NEURAL PROCESS</span>
+            </button>
+          )}
+        </div>
       </div>
     );
   }

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useSearchParams } from "react-router-dom";
 import { BarChart3, Bot, Moon, Sun, Plus, Trash2, Pencil, MessageSquare, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -64,67 +64,91 @@ export function Layout() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-transparent relative overflow-hidden font-sans">
+      <div className="grid-bg" />
+      
       {/* Sidebar */}
       <aside className={cn(
-        "border-r bg-card flex flex-col shrink-0 transition-all duration-200",
-        collapsed ? "w-12" : "w-64"
+        "glass border-r flex flex-col shrink-0 transition-all duration-300 z-10",
+        collapsed ? "w-16" : "w-72"
       )}>
         {/* Brand */}
-        <div className={cn("border-b", collapsed ? "p-2 flex justify-center" : "p-4")}>
-          <Link to="/" className={cn("flex items-center font-bold text-base tracking-tight", collapsed ? "justify-center" : "gap-2")}>
-            <BarChart3 className="h-5 w-5 text-primary shrink-0" />
-            {!collapsed && "Vibe-Trading"}
+        <div className={cn("border-b border-glass-border py-10 px-6", collapsed ? "flex justify-center" : "header-flex")}>
+          <Link to="/" className={cn("flex items-center gap-6 transition-all group", collapsed ? "justify-center" : "")}>
+            <div className="relative group">
+              <div className="absolute -inset-2 bg-teal/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="relative p-1 rounded-full bg-blue/10 border border-blue/20 group-hover:border-blue/50 transition-all duration-300 overflow-hidden w-12 h-12 flex items-center justify-center">
+                <img src="/logo_product.svg" alt="Vibe-Trading" className="h-7 w-7 shrink-0 group-hover:scale-110 transition-transform" />
+              </div>
+            </div>
+            {!collapsed && (
+              <div className="flex flex-col">
+                <span className="font-display text-2xl font-black tracking-tighter text-white leading-none uppercase">
+                  THESOLUTION<span className="text-teal">.AT</span> // VIBE_TRADING
+                </span>
+                <span className="text-[10px] font-bold text-text-faint uppercase tracking-[0.3em] flex items-center gap-2 mt-2">
+                  <span className="text-white/20">—</span> DER SMARTE WEG ZU DEINEN TRADES
+                </span>
+              </div>
+            )}
           </Link>
         </div>
 
         {/* Nav */}
-        <nav className={cn("space-y-0.5", collapsed ? "p-1" : "p-2")}>
-          {NAV.map(({ to, icon: Icon, key }) => (
-            <Link
-              key={to}
-              to={to}
-              className={cn(
-                "flex items-center rounded-md text-sm transition-colors",
-                collapsed ? "justify-center p-2" : "gap-3 px-3 py-2",
-                (to === "/" ? pathname === "/" : pathname.startsWith(to))
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-              title={collapsed ? t[key] : undefined}
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              {!collapsed && t[key]}
-            </Link>
-          ))}
+        <nav className={cn("space-y-1.5 mt-6", collapsed ? "px-2" : "px-4")}>
+          {NAV.map(({ to, icon: Icon, key }) => {
+            const isActive = (to === "/" ? pathname === "/" : pathname.startsWith(to));
+            return (
+              <Link
+                key={to}
+                to={to}
+                className={cn(
+                  "flex items-center rounded-xl text-sm transition-all duration-500 group relative overflow-hidden",
+                  collapsed ? "justify-center p-3" : "gap-4 px-6 py-3.5",
+                  isActive
+                    ? "bg-teal/10 text-teal font-bold shadow-[inset_0_0_20px_rgba(125,211,192,0.05)] border border-teal/20"
+                    : "text-text-muted hover:bg-white/5 hover:text-white border border-transparent"
+                )}
+                title={collapsed ? t[key] : undefined}
+              >
+                {isActive && (
+                  <div className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-full bg-teal shadow-[0_0_15px_rgba(125,211,192,0.8)]" />
+                )}
+                <Icon className={cn("h-5 w-5 shrink-0 transition-transform duration-500 group-hover:scale-110", isActive ? "text-teal" : "text-text-muted")} />
+                {!collapsed && (
+                  <span className="font-display tracking-widest uppercase text-[10px] font-black">{t[key]}</span>
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Sessions — hidden when collapsed */}
         {!collapsed && (
-          <div className="flex-1 overflow-auto border-t mt-2 flex flex-col">
-            <div className="flex items-center justify-between px-4 py-2">
-              <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+          <div className="flex-1 overflow-auto border-t border-glass-border mt-8 flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4">
+              <span className="flex items-center gap-2 text-[10px] font-bold text-accent-purple uppercase tracking-widest opacity-80">
                 <MessageSquare className="h-3.5 w-3.5" />
                 {t.sessions}
               </span>
               <Link
                 to="/agent"
-                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                className="p-1.5 rounded-full bg-white/5 text-text-dim hover:bg-accent-teal hover:text-bg-dark transition-all duration-300"
                 title={t.newChat}
               >
                 <Plus className="h-3.5 w-3.5" />
               </Link>
             </div>
 
-            <div className="px-2 pb-2 space-y-0.5 overflow-auto flex-1">
+            <div className="px-4 pb-4 space-y-1 overflow-auto flex-1">
               {sessionsLoading ? (
-                <div className="space-y-1.5 px-2 py-1">
+                <div className="space-y-2 px-2">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-7 rounded-md bg-muted/50 animate-pulse" />
+                    <div key={i} className="h-10 rounded-lg bg-white/5 animate-pulse" />
                   ))}
                 </div>
               ) : sessions.length === 0 ? (
-                <p className="px-3 py-2 text-xs text-muted-foreground/60">{t.noSessions}</p>
+                <p className="px-4 py-4 text-[11px] text-text-dim/40 font-mono italic text-center">-- NO ACTIVE SESSIONS --</p>
               ) : null}
               {sessions.map((s) => {
                 const isActive = s.session_id === activeSessionId;
@@ -139,48 +163,48 @@ export function Layout() {
                         onChange={(e) => setRenameValue(e.target.value)}
                         onKeyDown={(e) => { if (e.key === "Enter") renameSession(s.session_id); if (e.key === "Escape") setRenameTarget(null); }}
                         onBlur={() => renameSession(s.session_id)}
-                        className="flex-1 min-w-0 pl-3 pr-2 py-1 rounded-md text-xs border border-primary bg-background outline-none"
+                        className="flex-1 min-w-0 px-4 py-2 rounded-lg text-[11px] border border-accent-blue bg-black/40 outline-none font-mono"
                       />
                     ) : (
                       <Link
                         to={`/agent?session=${s.session_id}`}
                         className={cn(
-                          "flex-1 min-w-0 pl-3 pr-14 py-1.5 rounded-md text-xs transition-colors truncate block border-l-2",
+                          "flex-1 min-w-0 px-4 py-2.5 rounded-lg text-[11px] transition-all duration-300 truncate block font-mono border border-transparent",
                           isActive
-                            ? "border-l-primary bg-primary/10 text-primary font-medium"
-                            : "border-l-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
+                            ? "bg-accent-blue/10 text-accent-blue border-accent-blue/30 font-bold"
+                            : "text-text-dim hover:bg-white/5 hover:text-white"
                         )}
                         title={s.title || s.session_id}
                       >
-                        <span className="flex items-center gap-1.5">
+                        <span className="flex items-center gap-2">
                           <span className={cn(
-                            "h-1.5 w-1.5 rounded-full shrink-0",
-                            s.status === "failed" ? "bg-danger" : isActive ? "bg-warning" : "bg-success/60"
+                            "h-1.5 w-1.5 rounded-full shrink-0 shadow-[0_0_5px_currentColor]",
+                            s.status === "failed" ? "text-danger bg-danger" : isActive ? "text-warning bg-warning" : "text-accent-teal bg-accent-teal"
                           )} />
                           {s.title || s.session_id.slice(0, 16)}
                         </span>
                       </Link>
                     )}
                     {!isRenaming && isDeleting ? (
-                      <div className="absolute right-0.5 flex items-center gap-0.5">
-                        <button onClick={() => deleteSession(s.session_id)} className="p-1 text-danger hover:bg-danger/10 rounded text-[10px] font-medium">{t.confirmDelete}</button>
-                        <button onClick={() => setDeleteTarget(null)} className="p-1 text-muted-foreground hover:bg-muted rounded text-[10px]">{t.cancelDelete}</button>
+                      <div className="absolute right-1 flex items-center gap-1 bg-bg-dark/95 p-1 rounded-lg border border-danger/50 backdrop-blur-md shadow-lg z-20">
+                        <button onClick={() => deleteSession(s.session_id)} className="px-2.5 py-1.5 bg-danger text-white hover:bg-danger/80 rounded text-[9px] font-black uppercase tracking-tighter transition-colors">{t.confirmDelete}</button>
+                        <button onClick={() => setDeleteTarget(null)} className="px-2.5 py-1.5 bg-white/10 text-white hover:bg-white/20 rounded text-[9px] font-black uppercase tracking-tighter transition-colors">{t.cancelDelete}</button>
                       </div>
                     ) : !isRenaming ? (
-                      <div className="absolute right-1 opacity-0 group-hover:opacity-100 flex items-center gap-0.5 transition-opacity">
+                      <div className="absolute right-2 opacity-30 group-hover:opacity-100 flex items-center gap-1 transition-all duration-300">
                         <button
                           onClick={(e) => { e.preventDefault(); e.stopPropagation(); setRenameTarget(s.session_id); setRenameValue(s.title || ""); }}
-                          className="p-1 text-muted-foreground hover:text-foreground rounded"
+                          className="p-1.5 text-text-dim hover:text-accent-blue hover:bg-accent-blue/15 rounded-lg border border-transparent hover:border-accent-blue/20 transition-all"
                           title="Rename"
                         >
-                          <Pencil className="h-3 w-3" />
+                          <Pencil className="h-4 w-4" />
                         </button>
                         <button
                           onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(s.session_id); }}
-                          className="p-1 text-muted-foreground hover:text-danger rounded"
+                          className="p-1.5 text-text-dim hover:text-danger hover:bg-danger/15 rounded-lg border border-transparent hover:border-danger/20 transition-all"
                           title={t.deleteConfirm}
                         >
-                          <Trash2 className="h-3 w-3" />
+                          <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
                     ) : null}
@@ -195,14 +219,14 @@ export function Layout() {
         {collapsed && <div className="flex-1" />}
 
         {/* Footer */}
-        <div className={cn("border-t", collapsed ? "p-1 flex flex-col items-center gap-1" : "p-3 space-y-2")}>
+        <div className={cn("border-t border-glass-border bg-white/2", collapsed ? "p-2 flex flex-col items-center gap-3" : "p-4 space-y-3")}>
           {collapsed ? (
             <>
-              <button onClick={toggle} className="p-1.5 text-muted-foreground hover:text-foreground rounded transition-colors" title={dark ? t.lightMode : t.darkMode}>
-                {dark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+              <button onClick={toggle} className="p-2.5 text-text-dim hover:text-accent-teal hover:bg-white/5 rounded-lg transition-all" title={dark ? t.lightMode : t.darkMode}>
+                {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </button>
-              <button onClick={() => setCollapsed(false)} className="p-1.5 text-muted-foreground hover:text-foreground rounded transition-colors" title="Expand">
-                <ChevronsRight className="h-3.5 w-3.5" />
+              <button onClick={() => setCollapsed(false)} className="p-2.5 text-text-dim hover:text-accent-blue hover:bg-white/5 rounded-lg transition-all" title="Expand">
+                <ChevronsRight className="h-4 w-4" />
               </button>
             </>
           ) : (
@@ -210,19 +234,24 @@ export function Layout() {
               <div className="flex items-center justify-between">
                 <button
                   onClick={toggle}
-                  className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  className="flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-wider text-text-dim hover:text-accent-teal transition-all"
                 >
-                  {dark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                  {dark ? <Sun className="h-4 w-4 text-accent-teal" /> : <Moon className="h-4 w-4 text-accent-blue" />}
                   {dark ? t.lightMode : t.darkMode}
                 </button>
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => setCollapsed(true)}
-                    className="p-1 text-muted-foreground hover:text-foreground rounded transition-colors"
-                    title="Collapse"
-                  >
-                    <ChevronsLeft className="h-3.5 w-3.5" />
-                  </button>
+                <button
+                  onClick={() => setCollapsed(true)}
+                  className="p-2 text-text-dim hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                  title="Collapse"
+                >
+                  <ChevronsLeft className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="flex items-center justify-between pt-1">
+                <p className="text-[10px] font-mono text-text-dim/40 tracking-widest uppercase">Version 0.1.0-ALPHA</p>
+                <div className="flex items-center gap-1.5">
+                  <div className="h-1.5 w-1.5 rounded-full bg-accent-teal animate-pulse shadow-[0_0_5px_rgba(125,211,192,0.8)]" />
+                  <span className="text-[9px] font-bold text-accent-teal uppercase tracking-tight">System Online</span>
                 </div>
               </div>
               <p className="text-xs text-muted-foreground/60">v0.1.5</p>
@@ -232,9 +261,9 @@ export function Layout() {
       </aside>
 
       {/* Main */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden relative z-0">
         <ConnectionBanner status={sseStatus} retryAttempt={sseRetryAttempt} />
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto custom-scrollbar relative">
           <Outlet />
         </main>
       </div>
