@@ -1,8 +1,6 @@
 services:
   vibe-trading:
     build: .
-    ports:
-      - "8899:8899"
     env_file:
       - agent/.env
     volumes:
@@ -11,6 +9,14 @@ services:
     restart: always
     networks:
       - tradehub-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vibe-trading.rule=Host(`vibe.thesolution.at`)"
+      - "traefik.http.routers.vibe-trading.entrypoints=websecure"
+      - "traefik.http.routers.vibe-trading.tls=true"
+      - "traefik.http.routers.vibe-trading.middlewares=vibe-auth"
+      - "traefik.http.middlewares.vibe-auth.basicauth.users=owner:$apr1$y.Usukd9$mCpYYvB1OBHCfULMnn0/f."
+      - "traefik.http.services.vibe-trading.loadbalancer.server.port=8899"
 
 volumes:
   vibe-runs:
@@ -19,4 +25,3 @@ volumes:
 networks:
   tradehub-network:
     external: true
-    name: tradehub-network
