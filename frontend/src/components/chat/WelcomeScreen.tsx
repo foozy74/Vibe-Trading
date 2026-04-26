@@ -92,7 +92,8 @@ const CATEGORIES: Category[] = [
   {
     label: "Trade Journal",
     icon: <NotebookPen className="h-4 w-4" />,
-    color: "text-orange-400 border-orange-500/30 hover:border-orange-500/60 hover:bg-orange-500/5",
+    colorClass: "text-orange-400",
+    glowClass: "border-orange-500/30 hover:border-orange-500/60 hover:bg-orange-500/5 shadow-orange-500/10",
     examples: [
       {
         title: "Analyze My Broker Export",
@@ -109,7 +110,8 @@ const CATEGORIES: Category[] = [
   {
     label: "Shadow Account",
     icon: <UserCircle2 className="h-4 w-4" />,
-    color: "text-emerald-400 border-emerald-500/30 hover:border-emerald-500/60 hover:bg-emerald-500/5",
+    colorClass: "text-emerald-400",
+    glowClass: "border-emerald-500/30 hover:border-emerald-500/60 hover:bg-emerald-500/5 shadow-emerald-500/10",
     examples: [
       {
         title: "Train My Shadow from Journal",
