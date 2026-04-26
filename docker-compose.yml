@@ -11,12 +11,12 @@ services:
       - tradehub-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.vibe-trading.rule=Host(`vibe.thesolution.at`)"
-      - "traefik.http.routers.vibe-trading.entrypoints=websecure"
-      - "traefik.http.routers.vibe-trading.tls=true"
-      - "traefik.http.routers.vibe-trading.middlewares=vibe-auth"
-      - "traefik.http.middlewares.vibe-auth.basicauth.users=owner:$apr1$y.Usukd9$mCpYYvB1OBHCfULMnn0/f."
-      - "traefik.http.services.vibe-trading.loadbalancer.server.port=8899"
+      - "traefik.http.routers.vibe-trading-router.rule=Host(`vibe.thesolution.at`)"
+      - "traefik.http.routers.vibe-trading-router.entrypoints=websecure"
+      - "traefik.http.routers.vibe-trading-router.tls=true"
+      - "traefik.http.routers.vibe-trading-router.middlewares=vibe-trading-auth"
+      - "traefik.http.middlewares.vibe-trading-auth.basicauth.users=owner:$$apr1$$y.Usukd9$$mCpYYvB1OBHCfULMnn0/f."
+      - "traefik.http.services.vibe-trading-router.loadbalancer.server.port=8899"
 
 volumes:
   vibe-runs:
