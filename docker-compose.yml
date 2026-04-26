@@ -14,7 +14,7 @@ services:
       - "traefik.http.routers.vibe-trading-router.rule=Host(`vibe.thesolution.at`)"
       - "traefik.http.routers.vibe-trading-router.tls=true"
       - "traefik.http.routers.vibe-trading-router.middlewares=vibe-trading-auth"
-      - "traefik.http.middlewares.vibe-trading-auth.basicauth.users=owner:$$apr1$$y.Usukd9$$mCpYYvB1OBHCfULMnn0/f."
+      - "traefik.http.middlewares.vibe-trading-auth.basicauth.users=owner:$$apr1$$m3CeOzZ3$$I3WXxNUs8lJ.hx5foBv3C0"
       - "traefik.http.services.vibe-trading-router.loadbalancer.server.port=8899"
 
 volumes:
