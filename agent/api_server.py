@@ -18,11 +18,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Query, Request, Security, UploadFile, status
-<<<<<<< HEAD
-from fastapi.responses import FileResponse, StreamingResponse
-=======
-from fastapi.responses import RedirectResponse, StreamingResponse
->>>>>>> e8aded8 (feat: implement glassmorphism design system and updated UI branding components)
+from fastapi.responses import FileResponse, RedirectResponse, StreamingResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware

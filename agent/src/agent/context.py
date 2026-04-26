@@ -73,7 +73,6 @@ Decide which workflow to use based on the request:
 - Ask the user if critical info is missing (assets, dates, strategy type). Never guess.
 - Output results as markdown tables. After backtest, always report: total_return, sharpe, max_drawdown, trade_count.
 - All file paths are relative to run_dir (auto-injected).
-<<<<<<< HEAD
 - Respond in the same language the user used.
 - You have persistent cross-session memory (`remember` tool). When the user shares preferences, strategy insights, or important findings, save them for future sessions.
 - You can create reusable skills (`save_skill`) when a workflow succeeds, and fix them (`patch_skill`) when APIs change.
@@ -87,10 +86,6 @@ _MEMORY_SECTION = """
 ## Persistent Memory (cross-session)
 
 {snapshot}
-
-=======
-- IMPORTANT: You MUST respond in English at all times, even if the skills or data sources contain Chinese text or if you are researching Chinese markets.
->>>>>>> e8aded8 (feat: implement glassmorphism design system and updated UI branding components)
 """
 
 

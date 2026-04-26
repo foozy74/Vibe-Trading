@@ -52,11 +52,8 @@ def _ensure_registered() -> None:
         "backtest.loaders.yfinance_loader",
         "backtest.loaders.akshare_loader",
         "backtest.loaders.ccxt_loader",
-<<<<<<< HEAD
         "backtest.loaders.futu",
-=======
         "backtest.loaders.alphavantage_loader",
->>>>>>> e8aded8 (feat: implement glassmorphism design system and updated UI branding components)
     ]
     import importlib
     for mod in _loader_modules:
@@ -71,15 +68,9 @@ def _ensure_registered() -> None:
 # ---------------------------------------------------------------------------
 
 FALLBACK_CHAINS: dict[str, list[str]] = {
-<<<<<<< HEAD
-    "a_share":   ["tushare", "akshare"],
-    "us_equity": ["yfinance", "akshare"],
-    "hk_equity": ["yfinance", "futu", "akshare"],
-=======
     "a_share":   ["tushare", "alphavantage", "akshare"],
     "us_equity": ["yfinance", "alphavantage", "akshare"],
-    "hk_equity": ["yfinance", "alphavantage", "akshare"],
->>>>>>> e8aded8 (feat: implement glassmorphism design system and updated UI branding components)
+    "hk_equity": ["yfinance", "futu", "alphavantage", "akshare"],
     "crypto":    ["okx", "ccxt"],
     "futures":   ["tushare", "akshare"],
     "fund":      ["tushare", "akshare"],
