@@ -1,24 +1,21 @@
 services:
   vibe-trading:
     build: .
-    env_file:
-      - agent/.env
+    environment:
+      - LANGCHAIN_PROVIDER=${LANGCHAIN_PROVIDER}
+      - LANGCHAIN_MODEL_NAME=${LANGCHAIN_MODEL_NAME}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_BASE_URL=${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      - TUSHARE_TOKEN=${TUSHARE_TOKEN}
+      - API_AUTH_KEY=${API_AUTH_KEY}
+      - CORS_ORIGINS=${CORS_ORIGINS}
     volumes:
       - vibe-runs:/app/agent/runs
       - vibe-sessions:/app/agent/sessions
+    ports:
+      - "8899:8899"
     restart: always
-    networks:
-      - tradehub-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.vibe-trading-router.rule=Host(`vibe.thesolution.at`)"
-      - "traefik.http.routers.vibe-trading-router.tls=true"
-      - "traefik.http.services.vibe-trading-router.loadbalancer.server.port=8899"
 
 volumes:
   vibe-runs:
   vibe-sessions:
-
-networks:
-  tradehub-network:
-    external: true
