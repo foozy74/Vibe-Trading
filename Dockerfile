@@ -19,6 +19,15 @@ WORKDIR /app
 # System deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    python3-dev \
+    libpangocairo-1.0-0 \
+    libpango-1.0-0 \
+    libharfbuzz0b \
+    libpangoft2-1.0-0 \
+    libffi-dev \
+    libjpeg-dev \
+    libopenjp2-7-dev \
+    libpng-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Python deps (install before copying code for layer caching)
